@@ -6,16 +6,19 @@ from keras.preprocessing.image import ImageDataGenerator
 
 from pathlib import Path
 
-#Load DATA
+
+RUN_NAME = "Entrenamiento_1_git_3C"
+
+# Load DATA
 # create a data generator
 datagen = ImageDataGenerator()
 
 # load and iterate training dataset
-data_train = datagen.flow_from_directory('datos/archive-kaggle/DATASET/TRAIN/', class_mode='categorical',
-                                      target_size=(32, 32), batch_size=32)
+data_train = datagen.flow_from_directory('/home/jduran/master-bigData/datos/datosProduccion/TRAIN/', class_mode='categorical',
+                                         target_size=(32, 32), batch_size=32)
 # load and iterate test dataset
-data_test = datagen.flow_from_directory('datos/archive-kaggle/DATASET/TEST/', class_mode='categorical',
-                                     target_size=(32, 32), batch_size=32)
+data_test = datagen.flow_from_directory('/home/jduran/master-bigData/datos/datosProduccion/TEST/', class_mode='categorical',
+                                        target_size=(32, 32), batch_size=32)
 
 x_train, y_train = data_train.next()
 x_test, y_test = data_test.next()
@@ -31,13 +34,14 @@ x_test /= 255
 # # Convert class vectors to binary class matrices
 #y_train = keras.utils.to_categorical(y_train, 3)
 #y_test = keras.utils.to_categorical(y_test, 3 )
-#print(y_test)
+# print(y_test)
 
 #
 # # Create a model and add layers
 model = Sequential()
 #
-model.add(Conv2D(32, (3, 3), padding='same', input_shape=(32, 32, 3), activation="relu", name='Conv1'))
+model.add(Conv2D(32, (3, 3), padding='same', input_shape=(
+    32, 32, 3), activation="relu", name='Conv1'))
 model.add(Conv2D(32, (3, 3), activation="relu", name='Conv2'))
 model.add(MaxPooling2D(pool_size=(2, 2), name='Pooling1'))
 model.add(Dropout(0.25))
@@ -54,29 +58,28 @@ model.add(Dense(3, activation="softmax"))
 #
 # Compile the model
 model.compile(
-     loss='categorical_crossentropy',
-     optimizer="adam",
-     metrics=['accuracy']
- )
+    loss='categorical_crossentropy',
+    optimizer="adam",
+    metrics=['accuracy']
+)
 
 
 logger = keras.callbacks.TensorBoard(
-    log_dir='logs',
+    log_dir='clases_3/logs/{}'.format(RUN_NAME),
     write_graph=True,
     histogram_freq=5
 )
 
 
-
 # # Train the model
 model.fit(
-     x_train,
-     y_train,
-     batch_size=32,
-     epochs=25,
-     validation_data=(x_test, y_test),
-     shuffle=True,
-     callbacks=[logger]
+    x_train,
+    y_train,
+    batch_size=32,
+    epochs=25,
+    validation_data=(x_test, y_test),
+    shuffle=True,
+    callbacks=[logger]
 )
 
 # Save neural network structure
@@ -85,8 +88,7 @@ f = Path("model_structure.json")
 f.write_text(model_structure)
 
 # Save neural network's trained weights
-model.save_weights("model_weights.h5")
+model.save_weights("model_weights_C3.h5")
 
 
 model.summary()
-
