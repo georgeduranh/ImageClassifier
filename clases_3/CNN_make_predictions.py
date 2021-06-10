@@ -20,10 +20,11 @@ model_structure = f.read_text()
 model = model_from_json(model_structure)
 
 # Re-load the model's trained weights
-model.load_weights("model_weights.h5")
+model.load_weights("model_weights_C3.h5")
 
 # Load an image file to test, resizing it to 32x32 pixels (as required by this model)
-img = image.load_img("datos/archive-kaggle/DATASET/TEST/trash/trash4.jpg", target_size=(32, 32))
+img = image.load_img(
+    "/home/jduran/master-bigData/datos/pruebas/trash46.jpg", target_size=(32, 32))
 
 
 # Add a fourth dimension to the image (since Keras expects a list of images, not a single image)

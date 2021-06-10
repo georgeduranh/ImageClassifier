@@ -7,17 +7,17 @@ from keras.preprocessing.image import ImageDataGenerator
 from pathlib import Path
 
 
-RUN_NAME = "Entrenamiento_1_git_3C"
+RUN_NAME = "Entrenamiento_2_git_3C_DataSET_desbalanceado"
 
 # Load DATA
 # create a data generator
 datagen = ImageDataGenerator()
 
 # load and iterate training dataset
-data_train = datagen.flow_from_directory('/home/jduran/master-bigData/datos/datosProduccion/TRAIN/', class_mode='categorical',
+data_train = datagen.flow_from_directory('/home/jduran/master-bigData/datos/datosProduccion3C/TRAIN/', class_mode='categorical',
                                          target_size=(32, 32), batch_size=32)
 # load and iterate test dataset
-data_test = datagen.flow_from_directory('/home/jduran/master-bigData/datos/datosProduccion/TEST/', class_mode='categorical',
+data_test = datagen.flow_from_directory('/home/jduran/master-bigData/datos/datosProduccion3C/TEST/', class_mode='categorical',
                                         target_size=(32, 32), batch_size=32)
 
 x_train, y_train = data_train.next()
