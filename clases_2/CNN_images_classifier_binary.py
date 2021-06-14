@@ -1,4 +1,5 @@
 import keras
+from keras.backend import binary_crossentropy
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
@@ -7,7 +8,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from pathlib import Path
 
 
-RUN_NAME = "Entrenamiento_1_git"
+RUN_NAME = "Entrenamiento_5_evaluando_overfitting_25_epochs"
 
 # Load DATA
 # create a data generator
@@ -37,35 +38,48 @@ x_test /= 255
 # print(y_test)
 
 #
-# # Create a model and add layers
+# **********Create a model and add layers****************
 model = Sequential()
-#
+
 model.add(Conv2D(32, (3, 3), padding='same', input_shape=(
     32, 32, 3), activation="relu", name='Conv1'))
 model.add(Conv2D(32, (3, 3), activation="relu", name='Conv2'))
 model.add(MaxPooling2D(pool_size=(2, 2), name='Pooling1'))
 model.add(Dropout(0.25))
 
-#model.add(Conv2D(64, (3, 3), padding='same', activation="relu", name='Conv3'))
-#model.add(Conv2D(64, (3, 3), activation="relu", name='Conv4'))
-#model.add(MaxPooling2D(pool_size=(2, 2), name='Pooling2'))
-# model.add(Dropout(0.25))
+model.add(Conv2D(64, (3, 3), padding='same', activation="relu", name='Conv3'))
+model.add(Conv2D(64, (3, 3), activation="relu", name='Conv4'))
+model.add(MaxPooling2D(pool_size=(2, 2), name='Pooling2'))
+model.add(Dropout(0.5))
 
 model.add(Flatten())
 model.add(Dense(512, activation="relu"))
 model.add(Dropout(0.5))
-model.add(Dense(2, activation="softmax"))
-#
+model.add(Dense(2, activation="sigmoid"))
+
+
 # Compile the model
 model.compile(
-    loss='categorical_crossentropy',
+    loss="binary_crossentropy",
     optimizer="adam",
     metrics=['accuracy']
 )
 
 
+valData = 10
+
+# Validation Data
+#x_val = x_train[:valData]
+#partial_x_train = x_train[valData:]
+
+#y_val = y_train[:valData]
+#partial_y_train = y_train[valData:]
+
+
+# Saving the model logs
 logger = keras.callbacks.TensorBoard(
-    log_dir='logs/{}'.format(RUN_NAME),
+    log_dir='/home/jduran/master-bigData/clasificadorImagenes/clases_2/logs/{}'.format(
+        RUN_NAME),
     write_graph=True,
     histogram_freq=5
 )
@@ -76,7 +90,7 @@ model.fit(
     x_train,
     y_train,
     batch_size=32,
-    epochs=100,
+    epochs=25,
     validation_data=(x_test, y_test),
     shuffle=True,
     callbacks=[logger]
@@ -84,11 +98,15 @@ model.fit(
 
 # Save neural network structure
 model_structure = model.to_json()
-f = Path("model_structure.json")
+f = Path("/home/jduran/master-bigData/clasificadorImagenes/clases_2/model_structure.json")
 f.write_text(model_structure)
 
 # Save neural network's trained weights
-model.save_weights("model_weights_C2.h5")
+model.save_weights(
+    "/home/jduran/master-bigData/clasificadorImagenes/clases_2/model_weights_C2.h5")
 
 
 model.summary()
+
+
+#model.evaluate(x_test, y_test)

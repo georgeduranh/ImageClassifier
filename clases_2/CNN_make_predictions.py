@@ -8,22 +8,23 @@ from keras.preprocessing.image import ImageDataGenerator
 # These are the CIFAR10 class labels from the training data (in order from 0 to 9)
 class_labels = [
     "Organic",
-    "Recycle",
-    "Trash"
+    "Recycle"
 ]
 
 # Load the json file that contains the model's structure
-f = Path("model_structure.json")
+f = Path("/home/jduran/master-bigData/clasificadorImagenes/clases_2/model_structure.json")
 model_structure = f.read_text()
 
 # Recreate the Keras model object from the json data
 model = model_from_json(model_structure)
 
 # Re-load the model's trained weights
-model.load_weights("model_weights.h5")
+model.load_weights(
+    "/home/jduran/master-bigData/clasificadorImagenes/clases_2/model_weights_C2.h5")
 
 # Load an image file to test, resizing it to 32x32 pixels (as required by this model)
-img = image.load_img("datos/archive-kaggle/DATASET/TEST/trash/trash4.jpg", target_size=(32, 32))
+img = image.load_img(
+    "/home/jduran/master-bigData/datos/pruebas/champiñon.png", target_size=(32, 32))
 
 
 # Add a fourth dimension to the image (since Keras expects a list of images, not a single image)
