@@ -8,7 +8,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from pathlib import Path
 
 
-RUN_NAME = "Entrenamiento_5_evaluando_overfitting_25_epochs"
+RUN_NAME = "Entrenamiento_9_imagenes_64x64_25epochs"
 
 # Load DATA
 # create a data generator
@@ -16,10 +16,10 @@ datagen = ImageDataGenerator()
 
 # load and iterate training dataset
 data_train = datagen.flow_from_directory('/home/jduran/master-bigData/datos/datosProduccion/TRAIN/', class_mode='categorical',
-                                         target_size=(32, 32), batch_size=32)
+                                         target_size=(64, 64), batch_size=32)
 # load and iterate test dataset
 data_test = datagen.flow_from_directory('/home/jduran/master-bigData/datos/datosProduccion/TEST/', class_mode='categorical',
-                                        target_size=(32, 32), batch_size=32)
+                                        target_size=(64, 64), batch_size=32)
 
 x_train, y_train = data_train.next()
 x_test, y_test = data_test.next()
@@ -31,6 +31,16 @@ x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
 
+#print(type(x_train))
+
+#print(len(x_train))
+#print(x_train)
+#print(len(x_test))
+#print(x_test)
+
+### Resampling the data 
+#x_total = np.append(x_train, x_test, axis=0)
+#print(len(x_total))
 
 # # Convert class vectors to binary class matrices
 #y_train = keras.utils.to_categorical(y_train, 3)
@@ -41,19 +51,19 @@ x_test /= 255
 # **********Create a model and add layers****************
 model = Sequential()
 
-model.add(Conv2D(32, (3, 3), padding='same', input_shape=(
-    32, 32, 3), activation="relu", name='Conv1'))
-model.add(Conv2D(32, (3, 3), activation="relu", name='Conv2'))
+model.add(Conv2D(64, (3, 3), padding='same', input_shape=(
+    64, 64, 3), activation="relu", name='Conv1'))
+model.add(Conv2D(64, (3, 3), activation="relu", name='Conv2'))
 model.add(MaxPooling2D(pool_size=(2, 2), name='Pooling1'))
-model.add(Dropout(0.25))
+model.add(Dropout(0.5))
 
-model.add(Conv2D(64, (3, 3), padding='same', activation="relu", name='Conv3'))
-model.add(Conv2D(64, (3, 3), activation="relu", name='Conv4'))
+model.add(Conv2D(128, (3, 3), padding='same', activation="relu", name='Conv3'))
+model.add(Conv2D(128, (3, 3), activation="relu", name='Conv4'))
 model.add(MaxPooling2D(pool_size=(2, 2), name='Pooling2'))
 model.add(Dropout(0.5))
 
 model.add(Flatten())
-model.add(Dense(512, activation="relu"))
+model.add(Dense(256, activation="relu"))
 model.add(Dropout(0.5))
 model.add(Dense(2, activation="sigmoid"))
 
@@ -109,4 +119,4 @@ model.save_weights(
 model.summary()
 
 
-#model.evaluate(x_test, y_test)
+

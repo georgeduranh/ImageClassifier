@@ -5,7 +5,7 @@ import numpy as np
 
 from keras.preprocessing.image import ImageDataGenerator
 
-# These are the CIFAR10 class labels from the training data (in order from 0 to 9)
+# These are the class labels from the training data
 class_labels = [
     "Organic",
     "Recycle"
@@ -22,9 +22,9 @@ model = model_from_json(model_structure)
 model.load_weights(
     "/home/jduran/master-bigData/clasificadorImagenes/clases_2/model_weights_C2.h5")
 
-# Load an image file to test, resizing it to 32x32 pixels (as required by this model)
+# Load an image file to test, resizing it to 64x64 pixels 
 img = image.load_img(
-    "/home/jduran/master-bigData/datos/pruebas/champiñon.png", target_size=(32, 32))
+    "/home/jduran/master-bigData/datos/pruebas/JD/R/R (1).jpeg", target_size=(64, 64))
 
 
 # Add a fourth dimension to the image (since Keras expects a list of images, not a single image)
