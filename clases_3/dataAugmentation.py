@@ -1,6 +1,8 @@
 
 # source https://blog.keras.io/building-powerful-image-classification-models-using-very-little-data.html
 
+# https://stackoverflow.com/questions/2632205/how-to-count-the-number-of-files-in-a-directory-using-python
+
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 
 
@@ -41,5 +43,5 @@ for i in range(1, archivos, 1):
     for batch in datagen.flow(x, batch_size=1,
                               save_to_dir='/home/jduran/master-bigData/datos/datosProduccion3C/TRAIN/T', save_prefix='Tx', save_format='jpg'):
         j += 1
-        if j > 9:
+        if j > 11:
             break  # otherwise the generator would loop indefinitely
