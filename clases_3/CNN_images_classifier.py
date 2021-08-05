@@ -3,11 +3,12 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
 from keras.preprocessing.image import ImageDataGenerator
+from keras.optimizers import SGD
 
 from pathlib import Path
 
 
-RUN_NAME = "Entrenamiento_3_64x64_desbalanceado"
+RUN_NAME = "Entrenamiento_3_Junio_22"
 
 # Load DATA
 # create a data generator
@@ -15,14 +16,18 @@ datagen = ImageDataGenerator()
 
 # load and iterate training dataset
 data_train = datagen.flow_from_directory('/home/jduran/master-bigData/datos/datosProduccion3C/TRAIN/', class_mode='categorical',
-                                         target_size=(64, 64), batch_size=32)
+                                         target_size=(64, 64), batch_size=64, seed=42, color_mode="rgb")
 # load and iterate test dataset
 data_test = datagen.flow_from_directory('/home/jduran/master-bigData/datos/datosProduccion3C/TEST/', class_mode='categorical',
-                                        target_size=(64, 64), batch_size=32)
+                                        target_size=(64, 64), batch_size=64, seed=42, color_mode="rgb")
 
 x_train, y_train = data_train.next()
 x_test, y_test = data_test.next()
 
+print(x_train.shape)
+print(y_train.shape)
+print(x_test.shape)
+print(y_test.shape)
 
 # # Normalize data set to 0-to-1 range
 x_train = x_train.astype('float32')
@@ -42,14 +47,15 @@ model = Sequential()
 #
 model.add(Conv2D(64, (3, 3), padding='same', input_shape=(
     64, 64, 3), activation="relu", name='Conv1'))
-model.add(Conv2D(32, (3, 3), activation="relu", name='Conv2'))
+model.add(Conv2D(64, (3, 3), activation="relu", name='Conv2'))
 model.add(MaxPooling2D(pool_size=(2, 2), name='Pooling1'))
 model.add(Dropout(0.5))
 
-model.add(Conv2D(64, (3, 3), padding='same', activation="relu", name='Conv3'))
-model.add(Conv2D(64, (3, 3), activation="relu", name='Conv4'))
+model.add(Conv2D(128, (3, 3), padding='same', activation="relu", name='Conv3'))
+model.add(Conv2D(128, (3, 3), activation="relu", name='Conv4'))
 model.add(MaxPooling2D(pool_size=(2, 2), name='Pooling2'))
-model.add(Dropout(0.25))
+model.add(Dropout(0.5))
+
 
 model.add(Flatten())
 model.add(Dense(256, activation="relu"))
@@ -57,9 +63,11 @@ model.add(Dropout(0.5))
 model.add(Dense(3, activation="softmax"))
 #
 # Compile the model
+
+opt = SGD(lr=0.1, momentum=0.9)
 model.compile(
     loss='categorical_crossentropy',
-    optimizer="adam",
+    optimizer='adam',
     metrics=['accuracy']
 )
 
@@ -71,14 +79,15 @@ logger = keras.callbacks.TensorBoard(
 )
 
 
-# # Train the model
+#model.fit_generator(x_train, steps_per_epoch=16, validation_data=x_test, validation_steps=8)
+
+# Train the model
 model.fit(
     x_train,
     y_train,
-    batch_size=32,
-    epochs=25,
+    batch_size=64,
+    epochs=16,
     validation_data=(x_test, y_test),
-    shuffle=True,
     callbacks=[logger]
 )
 
