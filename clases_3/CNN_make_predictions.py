@@ -58,7 +58,7 @@ try:
         print("You're connected to database: ", record)
 
         # Pending to update the querie here *************************************************************************
-        mySql_insert_query = """INSERT INTO results (idresults, time, category_classified, percentage_prediction) 
+        mySql_insert_query = """INSERT INTO results (idresults, time, category_classified, category_real, percentage_prediction) 
                            VALUES 
                            (2, '2021-07-26 15:00:00', 'organic', 'organic', '80') """
 
