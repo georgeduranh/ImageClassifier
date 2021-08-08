@@ -31,16 +31,16 @@ x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
 
-#print(type(x_train))
+# print(type(x_train))
 
-#print(len(x_train))
-#print(x_train)
-#print(len(x_test))
-#print(x_test)
+# print(len(x_train))
+# print(x_train)
+# print(len(x_test))
+# print(x_test)
 
-### Resampling the data 
+# Resampling the data
 #x_total = np.append(x_train, x_test, axis=0)
-#print(len(x_total))
+# print(len(x_total))
 
 # # Convert class vectors to binary class matrices
 #y_train = keras.utils.to_categorical(y_train, 3)
@@ -117,6 +117,3 @@ model.save_weights(
 
 
 model.summary()
-
-
-
