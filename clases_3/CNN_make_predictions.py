@@ -49,7 +49,7 @@ datagen_test = ImageDataGenerator(rescale=1./255)
 data_pruebas = datagen_test.flow_from_directory(root.filedir,
                                                 class_mode='categorical',
                                                 target_size=(64, 64), batch_size=32,
-                                                color_mode="rgb", shuffle=True)
+                                                color_mode="rgb", shuffle=False)
 
 
 files = data_pruebas.filenames
@@ -66,6 +66,7 @@ x_p, y_p = data_pruebas.next()
 print("Data generated")
 
 results = model.predict(x_p)
+
 print("Data predicted")
 
 i = 0
