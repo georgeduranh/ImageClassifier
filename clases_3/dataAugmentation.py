@@ -12,7 +12,7 @@ import os.path
 
 # path joining version for other paths
 # Change TRAIN by TEST to perform data augmentation over TEST dataset
-DIR = '/home/jduran/master-bigData/datos/datosProduccion3C/TRAIN/T/'
+DIR = '/home/jduran/master-bigData/datos/Modelo 2/TEST/T/'
 archivos = (len([name for name in os.listdir(DIR)
             if os.path.isfile(os.path.join(DIR, name))]))
 
@@ -29,7 +29,7 @@ datagen = ImageDataGenerator(
 # Data augmentation over each file in the path
 
 for i in range(1, archivos, 1):
-    file = "/home/jduran/master-bigData/datos/datosProduccion3C/TRAIN/T/TO_ ("+str(
+    file = "/home/jduran/master-bigData/datos/Modelo 2/TEST/T/T_ ("+str(
         i)+").jpg"
     # this is a PIL image
     img = load_img(file)
@@ -41,7 +41,7 @@ for i in range(1, archivos, 1):
     # and saves the results to the `preview/` directory
     j = 0
     for batch in datagen.flow(x, batch_size=1,
-                              save_to_dir='/home/jduran/master-bigData/datos/datosProduccion3C/TRAIN/T', save_prefix='Tx', save_format='jpg'):
+                              save_to_dir='/home/jduran/master-bigData/datos/Modelo 2/TEST/T/', save_prefix='Tx', save_format='jpg'):
         j += 1
-        if j > 11:
+        if j > 4:  ##number of data augmentation
             break  # otherwise the generator would loop indefinitely
