@@ -22,7 +22,7 @@ class_labels = [
 ]
 
 # Load the json file that contains the model's structure
-f = Path("//wsl$/Ubuntu-20.04/home/jduran/master-bigData/clasificadorImagenes/clases_3/model_structure.json")
+f = Path("//wsl$/Ubuntu-20.04/home/jduran/master-bigData/clasificadorImagenes/clases_3/model_structure_Entrenamiento_5_GCP_Septiembre_10_30k_3k_rescale.json")
 model_structure = f.read_text()
 
 # Recreate the Keras model object from the json data
@@ -30,7 +30,7 @@ model = model_from_json(model_structure)
 
 # Re-load the model's trained weights
 model.load_weights(
-    "//wsl$/Ubuntu-20.04/home/jduran/master-bigData/clasificadorImagenes/clases_3/model_weights_C3.h5")
+    "//wsl$/Ubuntu-20.04/home/jduran/master-bigData/clasificadorImagenes/clases_3/model_weights_C3_Entrenamiento_5_GCP_Septiembre_10_30k_3k_rescale.h5")
 
 
 # load data "pruebas"
@@ -118,7 +118,7 @@ try:
 
             # Records to be insertnet into the row of MySQL
             records = [timestamp, class_label,
-                       float(class_likelihood), recycleBagsColor, realClassification, dataFiles[i], "1"]
+                       float(class_likelihood), recycleBagsColor, realClassification, dataFiles[i], "GCP5"]
 
             # Insert to DB
             cursor.execute(

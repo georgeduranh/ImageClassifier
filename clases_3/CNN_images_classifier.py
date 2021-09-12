@@ -79,8 +79,8 @@ print(partial_x_train.shape) """
 # # Create a model and add layers
 model = Sequential()
 #
-model.add(Conv2D(64, (3, 3), padding='same', input_shape=(
-    64, 64, 3), activation="relu", name='Conv1'))
+model.add(Conv2D(64, (3, 3), padding='same',
+                 input_shape=(64, 64, 3), activation="relu", name='Conv1'))
 model.add(Conv2D(64, (3, 3), activation="relu", name='Conv2'))
 model.add(MaxPooling2D(pool_size=(2, 2), name='Pooling1'))
 model.add(Dropout(0.5))
