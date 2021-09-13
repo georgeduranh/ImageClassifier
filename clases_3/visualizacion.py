@@ -1,4 +1,5 @@
 
+import pandas as pd
 from streamlit import caching
 from matplotlib.widgets import Slider, CheckButtons
 import streamlit as st
@@ -8,6 +9,7 @@ import streamlit.components.v1 as components
 import os
 import time
 import datetime
+import seaborn as sns
 
 # Predictions
 from keras.models import model_from_json
@@ -51,6 +53,36 @@ def runQuery():
     return rowsx
 
 
+# Grafica con analisis mensual
+# if st.sidebar.checkbox("Análisis por año y mes", True, key=1):
+
+month = run_query(
+    "SELECT YEAR(time), MONTH(time), category_classified, COUNT(category_classified)  from results group by  YEAR(time), MONTH(time), category_classified  order BY category_classified DESC;")
+df = pd.DataFrame(month, columns=['Año', 'Mes', 'Categoria', 'Cantidad'])
+st.sidebar.checkbox("Análisis por año y mes", True, key=1)
+selectYear = st.sidebar.selectbox(
+    'Selecciona el año:', df['Año'].drop_duplicates())
+selectMonth = st.sidebar.selectbox(
+    'Selecciona el mes:', df['Mes'].drop_duplicates())
+
+yearData = df[df['Año'] == selectYear]
+monthData = df[yearData['Mes'] == selectMonth]
+
+print("DF month")
+print(monthData)
+
+#fig = plt.figure()
+# plt.bar(list(monthData['Categoria']), list(
+#    monthData['Cantidad']), align='center')
+#st.pyplot(fig) #
+
+fig2, ax = plt.subplots()
+sns.barplot(data=monthData, y='Cantidad', x='Mes', hue='Categoria',
+            palette=dict(Organico="Green", Reciclable="Gray", NoAprovechable="Black"))
+st.pyplot(fig2)
+
+
+# Carga de archivos
 image_file = st.file_uploader("Selecciona las imagenes de residuos que deseas clasificar:",
                               accept_multiple_files=True, help="Máximo tamaño 20Mb", key="25")
 
@@ -61,9 +93,9 @@ if col1.button('1. Recargar gráfica'):
 rowsx = dict(runQuery())
 print((rowsx))
 
-fig = plt.figure()
-plt.bar(list(rowsx.keys()), list(rowsx.values()), align='center')
-st.pyplot(fig)
+#fig = plt.figure()
+#plt.bar(list(rowsx.keys()), list(rowsx.values()), align='center')
+# st.pyplot(fig)
 
 
 if col2.button('2. Guardar imagenes'):
@@ -85,9 +117,9 @@ if col2.button('2. Guardar imagenes'):
 if col3.button('3. Clasificar imágenes'):
     # These are the class labels from the training data
     class_labels = [
-        "Organic",
-        "Recycle",
-        "Trash"
+        "Organico",
+        "Reciclable",
+        "NoAprovechable"
     ]
 
     # Load the json file that contains the model's structure
@@ -117,7 +149,7 @@ if col3.button('3. Clasificar imágenes'):
             print("Data predicted")
 
             try:
-                connection = mysql.connector.connect(host='172.27.224.1',
+                connection = mysql.connector.connect(host='172.17.160.1',
                                                      database='waste_classifier',
                                                      user='rootall01',
                                                      password='Jdh910523',
@@ -139,19 +171,21 @@ if col3.button('3. Clasificar imágenes'):
                         ts = time.time()
                         timestamp = datetime.datetime.fromtimestamp(
                             ts).strftime('%Y-%m-%d %H:%M:%S')
+                        dir = datetime.datetime.fromtimestamp(
+                            ts).strftime('%Y-%m-%d')
 
                         # Assigning recycling bag color
                         recycleBagsColor = ''
-                        if(class_label == "Organic"):
-                            recycleBagsColor = "Green"
-                        elif (class_label == "Recycle"):
-                            recycleBagsColor = "White"
+                        if(class_label == "Organico"):
+                            recycleBagsColor = "Verde"
+                        elif (class_label == "Reciclable"):
+                            recycleBagsColor = "Blanco"
                         else:
-                            recycleBagsColor = "Black"
+                            recycleBagsColor = "Negro"
 
                         # Records to be insertnet into the row of MySQL
                         records = [timestamp, class_label,
-                                   float(class_likelihood), recycleBagsColor, "NA", "/home/jduran/master-bigData/clasificadorImagenes/clases_3/images_loaded/2021-09-11/"+picture.name, "GCP5"]
+                                   float(class_likelihood), recycleBagsColor, "NA", "/home/jduran/master-bigData/clasificadorImagenes/clases_3/images_loaded/"+dir+"/"+picture.name, "GCP5"]
 
                         # Insert to DB
                         cursor.execute(
@@ -184,11 +218,13 @@ for row in rows:
     data_url = base64.b64encode(contents).decode("utf-8")
     file_.close()
 
-    st.markdown(
+    col1, col2 = st.columns(2)
+
+    col1.markdown(
         f'<img src="data:image/gif;base64,{data_url}" alt="waste" width=120 height=100>',
         unsafe_allow_html=True,
     )
 
-    st.write(
-        f"Time: {row[1]} --- Prediction: {row[2]} --- % Prediction: {row[3]}% --- Bag color: {row[4]} ")
+    col2.write(
+        f"Fecha y hora: {row[1]} Clasificación: {row[2]}, Porcentaje: {row[3]}%, Bolsa: {row[4]} ")
     st.write(f" ")
