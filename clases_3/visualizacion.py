@@ -19,7 +19,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from keras.preprocessing.image import ImageDataGenerator
 
-
+# Data base
 import mysql.connector
 from mysql.connector import Error
 
@@ -53,7 +53,7 @@ def runQuery():
     return rowsx
 
 
-# Grafica con analisis mensual
+# Montlhy plot
 # if st.sidebar.checkbox("Análisis por año y mes", True, key=1):
 
 month = run_query(
@@ -71,50 +71,43 @@ monthData = df[yearData['Mes'] == selectMonth]
 print("DF month")
 print(monthData)
 
-#fig = plt.figure()
-# plt.bar(list(monthData['Categoria']), list(
-#    monthData['Cantidad']), align='center')
-#st.pyplot(fig) #
 
+# Bar plot
 fig2, ax = plt.subplots()
 sns.barplot(data=monthData, y='Cantidad', x='Mes', hue='Categoria',
             palette=dict(Organico="Green", Reciclable="Gray", NoAprovechable="Black"))
 st.pyplot(fig2)
 
 
-# Carga de archivos
+# Image loading
 image_file = st.file_uploader("Selecciona las imagenes de residuos que deseas clasificar:",
                               accept_multiple_files=True, help="Máximo tamaño 20Mb", key="25")
 
-col1, col2, col3 = st.columns(3)
-if col1.button('1. Recargar gráfica'):
+col1, col2, = st.columns(2)
+
+if st.sidebar.button('Recargar datos'):
     runQuery()
 
-rowsx = dict(runQuery())
-print((rowsx))
-
-#fig = plt.figure()
-#plt.bar(list(rowsx.keys()), list(rowsx.values()), align='center')
-# st.pyplot(fig)
-
-
-if col2.button('2. Guardar imagenes'):
+# Button for saving images
+if col1.button('1. Guardar imagenes'):
     ts = time.time()
     dir = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
-    if not os.path.exists("images_loaded/"+dir):
-        os.mkdir("images_loaded/"+dir)
+    print(dir)
+    if not os.path.exists("clases_3/images_loaded/"+dir):
+        os.mkdir("clases_3/images_loaded/"+dir)
 
     for picture in image_file:
         if picture is not None:
             file_details = {"FileName": picture.name,
                             "FileType": picture.type}
         # st.write(file_details)
-        with open(os.path.join("images_loaded/"+dir, picture.name), "wb") as f:
+        with open(os.path.join("clases_3/images_loaded/"+dir, picture.name), "wb") as f:
             f.write(picture.getbuffer())
 
     st.success("Archivos guardados")
 
-if col3.button('3. Clasificar imágenes'):
+# Button for classifing images
+if col2.button('2. Clasificar imágenes'):
     # These are the class labels from the training data
     class_labels = [
         "Organico",
@@ -149,7 +142,7 @@ if col3.button('3. Clasificar imágenes'):
             print("Data predicted")
 
             try:
-                connection = mysql.connector.connect(host='172.17.160.1',
+                connection = mysql.connector.connect(host='172.18.240.1',
                                                      database='waste_classifier',
                                                      user='rootall01',
                                                      password='Jdh910523',
@@ -185,11 +178,11 @@ if col3.button('3. Clasificar imágenes'):
 
                         # Records to be insertnet into the row of MySQL
                         records = [timestamp, class_label,
-                                   float(class_likelihood), recycleBagsColor, "NA", "/home/jduran/master-bigData/clasificadorImagenes/clases_3/images_loaded/"+dir+"/"+picture.name, "GCP5"]
+                                   float(class_likelihood), recycleBagsColor, "/home/jduran/master-bigData/clasificadorImagenes/clases_3/images_loaded/"+dir+"/"+picture.name, "GCP5"]
 
                         # Insert to DB
                         cursor.execute(
-                            "INSERT INTO results (time, category_classified, percentage_prediction, recycle_bag_color, realClassification, path, model)  VALUES  (%s, %s, %s, %s, %s, %s, %s)",
+                            "INSERT INTO results (time, category_classified, percentage_prediction, recycle_bag_color, path, model)  VALUES  (%s, %s, %s, %s, %s, %s)",
                             records)
                         connection.commit()
 
@@ -213,7 +206,7 @@ rows = run_query("SELECT * from results order by idresults DESC;")
 
 # Print results in streamlit.
 for row in rows:
-    file_ = open(str(row[6][0:]), "rb")
+    file_ = open(str(row[5][0:]), "rb")
     contents = file_.read()
     data_url = base64.b64encode(contents).decode("utf-8")
     file_.close()
